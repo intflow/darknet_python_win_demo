@@ -1,0 +1,2 @@
+.\darknet.exe detector demo cfg/coco.data cfg/yolov3.cfg yolov3.weights rtsp://admin:intflow3121@192.168.1.64:554/Streaming/Channels/102/
+rem .\darknet.exe detector demo cfg/coco.data cfg/yolov3.cfg yolov3.weights test.mp4
