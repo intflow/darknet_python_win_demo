@@ -103,8 +103,8 @@ def main():
         except Exception:
             pass
     #cap = cv2.VideoCapture(0)
-    #cap = cv2.VideoCapture("test.mp4")
-    cap = cv2.VideoCapture("rtsp://admin:intflow3121@192.168.1.64:554/Streaming/Channels/102/")
+    cap = cv2.VideoCapture("test.mp4")
+    #cap = cv2.VideoCapture("rtsp://admin:intflow3121@192.168.1.64:554/Streaming/Channels/102/")
     #cap.set(3, 416)
     #cap.set(4, 416)
     #out = cv2.VideoWriter(
@@ -117,29 +117,31 @@ def main():
                                     darknet.network_height(netMain),3)
     while True:
         prev_time = time.time()
-        cap.grab()
-        ret, frame_read = cap.read()
-        frame_rgb = cv2.cvtColor(frame_read, cv2.COLOR_BGR2RGB)
-        frame_resized = cv2.resize(frame_rgb,
-                                   (darknet.network_width(netMain),
-                                    darknet.network_height(netMain)),
-                                   interpolation=cv2.INTER_LINEAR)
+        if not cap.grab():
+            print('Stopped')
+        else:
+            #cap.grab()
+            ret, frame_read = cap.read()
+            frame_rgb = cv2.cvtColor(frame_read, cv2.COLOR_BGR2RGB)
+            frame_resized = cv2.resize(frame_rgb,
+                                    (darknet.network_width(netMain),
+                                        darknet.network_height(netMain)),
+                                    interpolation=cv2.INTER_LINEAR)
 
-        #frame Ratio
-        (H,W,_) = frame_read.shape
-        (H_r,W_r,_) = frame_resized.shape
-        frame_ratio = (H/H_r, W/W_r)
+            #frame Ratio
+            (H,W,_) = frame_read.shape
+            (H_r,W_r,_) = frame_resized.shape
+            frame_ratio = (H/H_r, W/W_r)
 
-        darknet.copy_image_from_bytes(darknet_image,frame_resized.tobytes())
+            darknet.copy_image_from_bytes(darknet_image,frame_resized.tobytes())
 
-        detections = darknet.detect_image(netMain, metaMain, darknet_image, thresh=0.25)
-        #image = cvDrawBoxes(detections, frame_resized)
-        image = cvDrawBoxes_2(detections, frame_read, frame_ratio)
-        #image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-        print(1/(time.time()-prev_time))
-        #cap.grab()
-        cv2.imshow('Demo', image)
-        cv2.waitKey(3)
+            detections = darknet.detect_image(netMain, metaMain, darknet_image, thresh=0.25)
+            #image = cvDrawBoxes(detections, frame_resized)
+            image = cvDrawBoxes_2(detections, frame_read, frame_ratio)
+            image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+            print(1/(time.time()-prev_time))
+            cv2.imshow('Demo', image)
+            cv2.waitKey(3)
     cap.release()
     #out.release()
 
